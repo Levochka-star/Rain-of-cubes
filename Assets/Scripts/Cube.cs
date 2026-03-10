@@ -1,22 +1,34 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Cube : MonoBehaviour
+namespace Assets.Scripts
 {
-    private Renderer _renderer;
-    private void Awake()
+    public class Cube : MonoBehaviour, IPoolable<Cube>
     {
-        
-    }
+        private Coroutine _coroutine;
 
-    private void Start()
-    {
-        
-    }
+        public event Action<Cube> ReadyToDestroy;
 
-    private void Update()
-    {
-        
+        public void Stop()
+        {
+            if (_coroutine != null)
+                StopCoroutine(_coroutine);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(collision.gameObject.CompareTag("Terrain"))
+            {
+                _coroutine = StartCoroutine(WaitDelayDestroy(UnityEngine.Random.Range(2, 5)));
+            }
+        }
+
+        private IEnumerator WaitDelayDestroy(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            ReadyToDestroy?.Invoke(this);
+        }
     }
 }

@@ -5,16 +5,17 @@ using UnityEngine;
 public class Color : MonoBehaviour
 {
     private Renderer _renderer;
-    private UnityEngine.Color _color = new UnityEngine.Color(0.016f, 0.596f, 0.376f);
-    private bool _wasTouch = false;
+    private UnityEngine.Color _defaultColor = new UnityEngine.Color(0.016f, 0.596f, 0.376f);
+    private bool _wasTouch;
 
-    private void Awake()
+    private void OnEnable()
     {
+        _wasTouch = false;
         _renderer = GetComponent<Renderer>();
-        _renderer.material.color = _color;
+        _renderer.material.color = _defaultColor;
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Terrain") && _wasTouch == false)
         {
@@ -26,5 +27,10 @@ public class Color : MonoBehaviour
     private void Work()
     {
         _renderer.material.color = Random.ColorHSV(0f, 1f, 0f, 1f, 0f, 1f, 1f, 1f);
+    }
+
+    private void OnDisable()
+    {
+        _renderer.material.color = _defaultColor;
     }
 }

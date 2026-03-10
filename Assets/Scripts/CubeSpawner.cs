@@ -1,42 +1,56 @@
+using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool;
 
-public class Spawner : MonoBehaviour
+namespace Assets.Scripts
 {
-    [SerializeField] private Cube _prefab;
-
-    private ObjectPool<GameObject> _poll;
-
-    private void Start()
+    public class CubeSpawner : Spawner<Cube>
     {
+        private Coroutine _coroutine;
 
-    }
+        public void Stop()
+        {
+            if (_coroutine != null)
+                StopCoroutine(_coroutine);
+        }
 
-    private void Update()
-    {
-        Spawn();
-    }
+        private IEnumerator WaitDelayDestroy(float delay)
+        {
+            yield return new WaitForSeconds(delay);
 
-    private void Spawn()
-    {
-        Cube clone = Instantiate(_prefab, GenerateRandomVector3(), _prefab.transform.rotation);
-    }
+            Cube cube = Spawn();
 
-    private Vector3 GenerateRandomVector3()
-    {
-        var nextTransform = transform.position;
+            cube.transform.position = GenerateRandomVector3();
+            Work();
+        }
 
-        nextTransform.x = (Random.Range(transform.position.x - transform.
-        localScale.x * 0.5f, transform.position.x + transform.localScale.x * 0.5f));
+        private void Start()
+        {
+            Work();
+        }
 
-        nextTransform.y = (Random.Range(transform.position.y - transform.
-        localScale.y * 0.5f, transform.position.y + transform.localScale.y * 0.5f));
+        private void Work()
+        {
+            _coroutine = StartCoroutine(WaitDelayDestroy(0.2f));
 
-        nextTransform.z = (Random.Range(transform.position.z - transform.
-        localScale.z * 0.5f, transform.position.z + transform.localScale.z * 0.5f));
+        }
 
-        return nextTransform;
+        public Vector3 GenerateRandomVector3()
+        {
+            var nextTransform = transform.position;
+
+            nextTransform.x = (UnityEngine.Random.Range(transform.position.x - transform.
+            localScale.x * 0.5f, transform.position.x + transform.localScale.x * 0.5f));
+
+            nextTransform.y = (UnityEngine.Random.Range(transform.position.y - transform.
+            localScale.y * 0.5f, transform.position.y + transform.localScale.y * 0.5f));
+
+            nextTransform.z = (UnityEngine.Random.Range(transform.position.z - transform.
+            localScale.z * 0.5f, transform.position.z + transform.localScale.z * 0.5f));
+
+            return nextTransform;
+        }
     }
 }
