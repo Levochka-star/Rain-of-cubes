@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    [RequireComponent(typeof(ColorChanger))]
+
     public class Cube : MonoBehaviour, IPoolable<Cube>
     {
         private Coroutine _coroutine;
+        private ColorChanger _colorChanger;
 
         public event Action<Cube> ReadyToDestroy;
 
@@ -18,8 +21,13 @@ namespace Assets.Scripts
 
         private void OnCollisionEnter(Collision collision)
         {
-            if(collision.gameObject.CompareTag("Terrain"))
+            if (collision.gameObject.TryGetComponent<Ground>(out Ground ground))
             {
+                if (TryGetComponent<ColorChanger>(out ColorChanger colorChanger))
+                {
+                    Colorer(collision, colorChanger);
+                }
+
                 _coroutine = StartCoroutine(WaitDelayDestroy(UnityEngine.Random.Range(2, 5)));
             }
         }
@@ -29,6 +37,14 @@ namespace Assets.Scripts
             yield return new WaitForSeconds(delay);
 
             ReadyToDestroy?.Invoke(this);
+        }
+
+        private void Colorer(Collision collision, ColorChanger colorChanger)
+        {
+            if (colorChanger._wasTouch == false)
+            {
+                colorChanger.Work();
+            }
         }
     }
 }
