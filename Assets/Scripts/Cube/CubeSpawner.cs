@@ -7,16 +7,12 @@ namespace Assets.Scripts
     public class CubeSpawner : Spawner<Cube>
     {
         private Coroutine _coroutine;
+
         private GeneratorSpawnZone _spawnZone;
 
         private void Awake()
         {
             _spawnZone = GetComponent<GeneratorSpawnZone>();
-        }
-
-        private void OnEnable()
-        {
-            _coroutine = StartCoroutine(WaitDelayDestroy(0.2f));
         }
 
         private void OnDisable()
@@ -28,7 +24,12 @@ namespace Assets.Scripts
             }
         }
 
-        private IEnumerator WaitDelayDestroy(float delay)
+        public void Work()
+        {
+            _coroutine = StartCoroutine(WaitDelaySpawn(0.2f));
+        }
+
+        private IEnumerator WaitDelaySpawn(float delay)
         {
             while (true)
             {

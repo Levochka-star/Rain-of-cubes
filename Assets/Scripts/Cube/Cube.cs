@@ -4,17 +4,22 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Cube : MonoBehaviour, IPoolable<Cube>, IColorable
+    public class Cube : MonoBehaviour, IPoolable<Cube>
     {
+        [SerializeField] private float _minSecondsLive = 2f;
+        [SerializeField] private float _maxSecondsLive = 5f;
+
         private Coroutine _coroutine;
+
+        private bool _wasTouch;
+        private float _lifeTime;
 
         public event Action<Cube> ReadyToDestroy;
         public event Action ColorChangeRequested;
 
-        private bool _wasTouch;
-
         private void OnEnable()
         {
+            _lifeTime = UnityEngine.Random.Range(_minSecondsLive, _maxSecondsLive);
             _wasTouch = false;
         }
 
@@ -34,7 +39,7 @@ namespace Assets.Scripts
                 _wasTouch = true;
                 ColorChangeRequested?.Invoke();
 
-                _coroutine = StartCoroutine(WaitDelayDestroy(UnityEngine.Random.Range(2, 5)));
+                _coroutine = StartCoroutine(WaitDelayDestroy(_lifeTime));
             }
         }
 

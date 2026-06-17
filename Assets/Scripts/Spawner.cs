@@ -10,6 +10,8 @@ namespace Assets.Scripts
 
         private ObjectPool<T> _poll;
 
+        public event Action<Vector3> ObjectRelised;
+
         private void Configure(T obj)
         {
             obj.gameObject.SetActive(true);
@@ -19,6 +21,9 @@ namespace Assets.Scripts
         private void ReturnToPool(T obj)
         {
             obj.ReadyToDestroy -= ReturnToPool;
+
+            ObjectRelised?.Invoke(obj.transform.position);
+
             _poll.Release(obj);
         }
 
