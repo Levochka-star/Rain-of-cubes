@@ -10,20 +10,16 @@ namespace Assets.Scripts
 
         private ObjectPool<T> _poll;
 
-        private int _valueSpawnedObjects = 0;
-        private int _valueCreatedObjects = 0;
-        private int _valueActivedObjects = 0;
-
-        public int ValueSpawnedObjects => _valueSpawnedObjects;
-        public int ValueCreatedObjects => _valueCreatedObjects;
-        public int ValueActivedObjects => _valueActivedObjects;
+        public int ValueSpawnedObjects { get; private set; } = 0;
+        public int ValueCreatedObjects { get; private set; } = 0;
+        public int ValueActivedObjects { get; private set; } = 0;
 
         public event Action<Vector3> ObjectRelised;
         public event Action StatsObjectChanged;
 
         private T Create()
         {
-            _valueCreatedObjects++;
+            ValueCreatedObjects++;
             StatsObjectChanged?.Invoke();
 
             return Instantiate(_prefab, Vector3.zero, Quaternion.identity);
@@ -34,7 +30,7 @@ namespace Assets.Scripts
             obj.gameObject.SetActive(true);
             obj.ReadyToDestroy += ReturnToPool;
 
-            _valueActivedObjects++;
+            ValueActivedObjects++;
             StatsObjectChanged?.Invoke();
         }
 
@@ -46,7 +42,7 @@ namespace Assets.Scripts
 
             _poll.Release(obj);
 
-            _valueActivedObjects--;
+            ValueActivedObjects--;
             StatsObjectChanged?.Invoke();
         }
 
@@ -65,7 +61,7 @@ namespace Assets.Scripts
                   );
             }
 
-            _valueSpawnedObjects++;
+            ValueSpawnedObjects++;
             StatsObjectChanged?.Invoke();
 
             return _poll.Get();

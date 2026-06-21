@@ -10,6 +10,8 @@ namespace Assets.Scripts
 
         private GeneratorSpawnZone _spawnZone;
 
+        private WaitForSeconds _waitSpawn = new WaitForSeconds(0.2f);
+
         private void Awake()
         {
             _spawnZone = GetComponent<GeneratorSpawnZone>();
@@ -26,14 +28,14 @@ namespace Assets.Scripts
 
         public void Work()
         {
-            _coroutine = StartCoroutine(WaitDelaySpawn(0.2f));
+            _coroutine = StartCoroutine(WaitDelaySpawn());
         }
 
-        private IEnumerator WaitDelaySpawn(float delay)
+        private IEnumerator WaitDelaySpawn()
         {
-            while (true)
+            while (enabled)
             {
-                yield return new WaitForSeconds(delay);
+                yield return _waitSpawn;
 
                 Cube cube = Spawn();
 
